@@ -14,10 +14,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  despliegue:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+
+  build:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,6 +30,15 @@ jobs:
         with:
           path: "."
 
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Despliegue
         id: deployment
         uses: actions/deploy-pages@v4.0.5
